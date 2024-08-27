@@ -1,4 +1,6 @@
+'use client'
 import React, { useState } from 'react';
+import Image from 'next/image';
 
 interface NavigationItem {
   title: string;
@@ -20,11 +22,11 @@ const Navbar: React.FC = () => {
       <div className="items-center px-4 max-w-screen-xl mx-auto md:flex md:px-8">
         <div className="flex items-center justify-between py-3 md:py-5 md:block">
           <a href="javascript:void(0)" className='flex items-center justify-center gap-2'>
-            <img
+            <Image
               src="/logo.png"
               width={50}
               height={50}
-              alt="Float UI logo"
+              alt="logo"
             />
             <p className='text-xl text-white'>Adamantium</p>
           </a>
