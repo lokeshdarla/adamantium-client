@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface NavigationItem {
   title: string;
@@ -79,12 +80,12 @@ const Navbar: React.FC = () => {
           </ul>
         </div>
         <div className="hidden md:inline-block">
-          <a
-            href="javascript:void(0)"
+          <Link
+            href="/dashboard"
             className="py-3 px-4 text-white bg-indigo-600 hover:bg-indigo-700 rounded-md shadow"
           >
             Get Started
-          </a>
+          </Link>
         </div>
       </div>
     </nav>
