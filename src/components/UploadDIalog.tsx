@@ -25,7 +25,7 @@ const UploadDialog = () => {
             </clipPath>
           </defs>
         </svg>
-        Toggle modal
+        Upload
       </button>
 
       {isOpen && (

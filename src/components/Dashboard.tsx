@@ -2,14 +2,12 @@ import UploadDIalog from "./UploadDIalog"
 
 const Dashboard = () => {
   return (
-    <section className="container px-4 py-10 mx-auto">
-      <div className="sm:flex sm:items-center sm:justify-between">
+    <section className="container px-4 py-10 sm:mx-auto">
+      <div className="sm:flex flex-col mt-5 sm:mt-0 sm:flex-row sm:items-center sm:justify-between">
         <h2 className="text-lg font-medium text-gray-800 dark:text-white">Files uploaded</h2>
 
-
-
-        <div className="flex items-center mt-4 gap-x-3">
-          <div className="relative flex items-center mt-4 md:mt-0">
+        <div className="flex items-center sm:justify-center justify-between mt-4 gap-x-3">
+          <div className="relative flex items-center w-full  md:mt-0">
 
             <span className="absolute">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="w-5 h-5 mx-3 text-gray-400 dark:text-gray-600">
