@@ -1,11 +1,50 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
-const UploadDialog = () => {
-  const [isOpen, setIsOpen] = useState(false);
+const UploadDialog: React.FC = () => {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [fileName, setFileName] = useState<string | null>(null);
 
   const toggleModal = () => {
     setIsOpen(!isOpen);
+  };
+
+  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files) {
+      const selectedFile = event.target.files[0];
+      setFile(selectedFile);
+      setFileName(selectedFile.name);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+    setUploading(true);
+    setError(null);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+      const response = await axios.post('http://localhost:8000/uploadfile/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log(response);
+      toggleModal();
+      toast.success('File uploaded successfully!');
+    } catch (err) {
+      // Handle error
+      setError('Upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -29,37 +68,51 @@ const UploadDialog = () => {
       </button>
 
       {isOpen && (
-        <div className='fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60'>
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-gray-800 bg-opacity-60'>
           <div className="relative w-full max-w-md mx-4 bg-white rounded-lg shadow-lg overflow-hidden dark:bg-gray-800">
             <button
               type="button"
               className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100"
               onClick={toggleModal}
             >
-              <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+              <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
               </svg>
               <span className="sr-only">Close modal</span>
             </button>
             <div className="p-6 text-center">
-              <svg className="mx-auto mb-4 text-gray-400 dark:text-gray-200 w-14 h-14" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 11V6m0 8h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-              </svg>
-              <h3 className="mb-4 text-lg font-medium text-gray-700 dark:text-gray-300">Are you sure you want to delete this item?</h3>
+
+              <div className="flex items-center py-10 justify-center w-full">
+                <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-40 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 0 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
+                  <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                    <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                      <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                    </svg>
+
+                    {fileName ? <p className="text-blue-500 text-sm mt-2">{fileName}</p> : <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="font-semibold">Click to upload</span> or drag and drop</p>}
+                    <p className="text-xs text-gray-500 dark:text-gray-400">.out .exe </p>
+                  </div>
+                  <input id="dropzone-file" type="file" className="hidden" onChange={handleFileChange} />
+                </label>
+              </div>
+
+              {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+
               <div className="flex justify-center gap-4">
                 <button
-                  onClick={() => console.log('Confirmed')}
+                  onClick={handleUpload}
                   type="button"
-                  className="text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-400 font-medium rounded-lg text-sm px-5 py-2.5"
+                  disabled={uploading || !file}
+                  className={`flex gap-2 text-white ${uploading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} focus:ring-4 focus:outline-none focus:ring-blue-500 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-400`}
                 >
-                  Yes, Im sure
+                  {uploading ? 'Uploading...' : 'Upload'}
                 </button>
                 <button
                   onClick={toggleModal}
                   type="button"
                   className="text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-blue-600 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-700 text-sm px-5 py-2.5"
                 >
-                  No, cancel
+                  Cancel
                 </button>
               </div>
             </div>
